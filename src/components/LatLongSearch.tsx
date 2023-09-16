@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Button, Col, Input, Label, Row, Spinner } from "reactstrap";
+import { Alert, Button, Col, Input, Label, Row, Spinner } from "reactstrap";
+import ShowResults from "./ShowResults";
 
 function LatLongSearch() {
   const [query, setQuery] = useState<string>("");
@@ -7,18 +8,40 @@ function LatLongSearch() {
   const [longitude, setLongitude] = useState<string>("");
   const [address, setAddress] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(false);
 
-  const API_URL = "https://geocode.maps.co";
+  const url = "https://trueway-geocoding.p.rapidapi.com";
+
+  const options = {
+    method: "GET",
+    headers: {
+      "X-RapidAPI-Key": import.meta.env.VITE_REACT_APP_RAPIDAPI_KEY,
+      "X-RapidAPI-Host": import.meta.env.VITE_REACT_APP_RAPIDAPI_HOST,
+    },
+  };
+
+  const onDismissed = () => {
+    setVisible(false);
+  };
 
   const fetchResults = async (query: string) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_URL}/search?q={${query}}`);
+      if (query === null || query.match(/^ *$/) !== null) {
+        setVisible(true);
+        setIsLoading(false);
+        return;
+      }
+      const response = await fetch(
+        `${url}/Geocode?address=${query}&language=en`,
+        options
+      );
       const data = await response.json();
-      const result = data[0] || {};
-      setLatitude(result.lat || "");
-      setLongitude(result.lon || "");
-      setAddress(result.display_name || "");
+      const results = data.results[0] || {};
+
+      setLatitude(results.location.lat || "");
+      setLongitude(results.location.lng || "");
+      setAddress(results.address || "");
       setIsLoading(false);
     } catch (error) {
       console.error(error);
@@ -36,6 +59,9 @@ function LatLongSearch() {
   return (
     <Row>
       <Col className="mt-4">
+        <Alert color="warning" isOpen={visible} toggle={onDismissed}>
+          Address field must not be empty.
+        </Alert>
         <Label>Enter Postal Address</Label>
         <Input
           type="search"
@@ -61,23 +87,11 @@ function LatLongSearch() {
             style={{ height: "7rem", width: "7rem" }}
           ></Spinner>
         ) : (
-          <div>
-            <p className="fw-bold">
-              Latitude: <span>{latitude}</span>
-            </p>
-            <p className="fw-bold">
-              Longitude: <span>{longitude}</span>
-            </p>
-            <p className="fw-bold">
-              BDP Status: <span>Result here</span>
-            </p>
-            <p className="fw-bold">
-              R-PSB Deployment Status: <span>Result here</span>
-            </p>
-            <p className="fw-bold">
-              Address: <span>{address}</span>
-            </p>
-          </div>
+          <ShowResults
+            latitude={latitude}
+            longitude={longitude}
+            address={address}
+          />
         )}
       </Col>
     </Row>
