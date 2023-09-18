@@ -9,6 +9,7 @@ function LatLongSearch() {
   const [address, setAddress] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
+  const [disabledBtn, setDisabledBtn] = useState<boolean>(false);
 
   const url = "https://trueway-geocoding.p.rapidapi.com";
 
@@ -22,13 +23,16 @@ function LatLongSearch() {
 
   const onDismissed = () => {
     setVisible(false);
+    setDisabledBtn(false);
   };
 
   const fetchResults = async (query: string) => {
     setIsLoading(true);
     try {
+      //form validation
       if (query === null || query.match(/^ *$/) !== null) {
         setVisible(true);
+        setDisabledBtn(true);
         setIsLoading(false);
         return;
       }
@@ -59,8 +63,13 @@ function LatLongSearch() {
   return (
     <Row>
       <Col className="mt-4">
-        <Alert color="warning" isOpen={visible} toggle={onDismissed}>
-          Address field must not be empty.
+        <Alert
+          className="position-absolute top-0 start-50 translate-middle-x mt-2"
+          color="warning"
+          isOpen={visible}
+          toggle={onDismissed}
+        >
+          <strong>Warning!</strong> Address field must not be empty
         </Alert>
         <Label>Enter Postal Address</Label>
         <Input
@@ -69,7 +78,12 @@ function LatLongSearch() {
           value={query}
           onChange={handleChange}
         />
-        <Button className="mt-3" color="primary" onClick={handleSearch}>
+        <Button
+          disabled={disabledBtn}
+          className="mt-3"
+          color="primary"
+          onClick={handleSearch}
+        >
           {isLoading ? (
             <div>
               <Spinner size="sm">Loading...</Spinner>
