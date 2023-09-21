@@ -7,13 +7,14 @@ type MyProps = {
 };
 
 function ShowResults(props: MyProps) {
+  const { latitude, longitude, address } = props;
   return (
     <>
       <p className="fw-bold">
-        Latitude: <span>{props.latitude}</span>
+        Latitude: <span>{latitude}</span>
       </p>
       <p className="fw-bold">
-        Longitude: <span>{props.longitude}</span>
+        Longitude: <span>{longitude}</span>
       </p>
       <p className="fw-bold">
         BDP Status: <span>Result here</span>
@@ -22,7 +23,7 @@ function ShowResults(props: MyProps) {
         R-PSB Deployment Status: <span>Result here</span>
       </p>
       <p className="fw-bold">
-        Address: <span>{props.address}</span>
+        Address: <span>{address}</span>
       </p>
     </>
   );

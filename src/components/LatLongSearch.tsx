@@ -2,14 +2,21 @@ import React, { useState } from "react";
 import { Alert, Button, Col, Input, Label, Row, Spinner } from "reactstrap";
 import ShowResults from "./ShowResults";
 
+interface Dataset {
+  lat: string;
+  lng: string;
+  address: string;
+}
+
 function LatLongSearch() {
   const [query, setQuery] = useState<string>("");
-  const [latitude, setLatitude] = useState<string>("");
-  const [longitude, setLongitude] = useState<string>("");
-  const [address, setAddress] = useState<string>("");
+  const [dataset, setDataset] = useState<Dataset>({
+    lat: "",
+    lng: "",
+    address: "",
+  });
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [visible, setVisible] = useState<boolean>(false);
-  const [disabledBtn, setDisabledBtn] = useState<boolean>(false);
+  const [affirmative, setAffirmative] = useState<boolean>(false);
 
   const url = "https://trueway-geocoding.p.rapidapi.com";
 
@@ -22,8 +29,7 @@ function LatLongSearch() {
   };
 
   const onDismissed = () => {
-    setVisible(false);
-    setDisabledBtn(false);
+    setAffirmative(false);
   };
 
   const fetchResults = async (query: string) => {
@@ -31,8 +37,7 @@ function LatLongSearch() {
     try {
       //form validation
       if (query === null || query.match(/^ *$/) !== null) {
-        setVisible(true);
-        setDisabledBtn(true);
+        setAffirmative(true);
         setIsLoading(false);
         return;
       }
@@ -43,9 +48,18 @@ function LatLongSearch() {
       const data = await response.json();
       const results = data.results[0] || {};
 
-      setLatitude(results.location.lat || "");
-      setLongitude(results.location.lng || "");
-      setAddress(results.address || "");
+      setDataset(
+        {
+          lat: results.location.lat,
+          lng: results.location.lng,
+          address: results.address,
+        } || {
+          lat: "",
+          lng: "",
+          address: "",
+        }
+      );
+
       setIsLoading(false);
     } catch (error) {
       console.error(error);
@@ -66,20 +80,22 @@ function LatLongSearch() {
         <Alert
           className="position-absolute top-0 start-50 translate-middle-x mt-2"
           color="warning"
-          isOpen={visible}
+          isOpen={affirmative}
           toggle={onDismissed}
         >
           <strong>Warning!</strong> Address field must not be empty
         </Alert>
-        <Label>Enter Postal Address</Label>
+        <Label for="searchBar">Enter Postal Address</Label>
         <Input
+          id="searchBar"
+          name="searchBar"
           type="search"
           placeholder="e.g Brgy., Pasian, Mabini, Davao de Oro"
           value={query}
           onChange={handleChange}
         />
         <Button
-          disabled={disabledBtn}
+          disabled={affirmative}
           className="mt-3"
           color="primary"
           onClick={handleSearch}
@@ -102,9 +118,9 @@ function LatLongSearch() {
           ></Spinner>
         ) : (
           <ShowResults
-            latitude={latitude}
-            longitude={longitude}
-            address={address}
+            latitude={dataset.lat}
+            longitude={dataset.lng}
+            address={dataset.address}
           />
         )}
       </Col>
