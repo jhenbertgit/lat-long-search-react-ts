@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Alert, Button, Col, Input, Label, Row, Spinner } from "reactstrap";
+import { Col, Row, Spinner } from "reactstrap";
 import ShowResults from "./ShowResults";
+import Form from "./Form";
 
 interface Dataset {
   lat: string;
@@ -10,13 +11,13 @@ interface Dataset {
 
 function LatLongSearch() {
   const [query, setQuery] = useState<string>("");
+  const [status, setStatus] = useState<string>("typing");
+  const [affirmative, setAffirmative] = useState<boolean>(false);
   const [dataset, setDataset] = useState<Dataset>({
     lat: "",
     lng: "",
     address: "",
   });
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [affirmative, setAffirmative] = useState<boolean>(false);
 
   const url = "https://trueway-geocoding.p.rapidapi.com";
 
@@ -33,12 +34,12 @@ function LatLongSearch() {
   };
 
   const fetchResults = async (query: string) => {
-    setIsLoading(true);
+    setStatus("loading");
     try {
       //form validation
       if (query === null || query.match(/^ *$/) !== null) {
         setAffirmative(true);
-        setIsLoading(false);
+        setStatus("typing");
         return;
       }
       const response = await fetch(
@@ -59,8 +60,7 @@ function LatLongSearch() {
           address: "",
         }
       );
-
-      setIsLoading(false);
+      setStatus("success");
     } catch (error) {
       console.error(error);
     }
@@ -72,51 +72,33 @@ function LatLongSearch() {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
+    setStatus("typing");
   };
 
+  const isSuccess = status === "success";
+  const isLoading = status === "loading";
+
   return (
-    <Row>
-      <Col className="mt-4">
-        <Alert
-          className="position-absolute top-0 start-50 translate-middle-x mt-2"
-          color="warning"
-          isOpen={affirmative}
-          toggle={onDismissed}
-        >
-          <strong>Warning!</strong> Address field must not be empty
-        </Alert>
-        <Label for="searchBar">Enter Postal Address</Label>
-        <Input
-          id="searchBar"
-          name="searchBar"
-          type="search"
-          placeholder="e.g Brgy., Pasian, Mabini, Davao de Oro"
-          value={query}
-          onChange={handleChange}
+    <Row className="justify-content-center">
+      <Col md={8} className="mt-5">
+        <Form
+          alertIsOpen={affirmative}
+          alertToggle={onDismissed}
+          query={query}
+          inputOnChange={handleChange}
+          btnDisabled={affirmative}
+          btnOnClick={handleSearch}
+          isLoading={isLoading}
         />
-        <Button
-          disabled={affirmative}
-          className="mt-3"
-          color="primary"
-          onClick={handleSearch}
-        >
-          {isLoading ? (
-            <div>
-              <Spinner size="sm">Loading...</Spinner>
-              <span> Loading</span>
-            </div>
-          ) : (
-            "Search"
-          )}
-        </Button>
       </Col>
-      <Col className="mt-4">
-        {isLoading ? (
+      <Col md={8} className="mt-5 d-flex flex-column align-items-center">
+        {isLoading && (
           <Spinner
             color="primary"
             style={{ height: "7rem", width: "7rem" }}
           ></Spinner>
-        ) : (
+        )}
+        {isSuccess && (
           <ShowResults
             latitude={dataset.lat}
             longitude={dataset.lng}

@@ -1,31 +1,38 @@
-import React from "react";
+import { Table } from "reactstrap";
 
-type MyProps = {
+type Props = {
   latitude: string;
   longitude: string;
   address: string;
 };
 
-function ShowResults(props: MyProps) {
+function ShowResults(props: Props) {
   const { latitude, longitude, address } = props;
   return (
-    <>
-      <p className="fw-bold">
-        Latitude: <span>{latitude}</span>
-      </p>
-      <p className="fw-bold">
-        Longitude: <span>{longitude}</span>
-      </p>
-      <p className="fw-bold">
-        BDP Status: <span>Result here</span>
-      </p>
-      <p className="fw-bold">
-        R-PSB Deployment Status: <span>Result here</span>
-      </p>
-      <p className="fw-bold">
-        Address: <span>{address}</span>
-      </p>
-    </>
+    <Table borderless hover>
+      <tbody>
+        <tr>
+          <th scope="row">Latitude:</th>
+          <td>{latitude}</td>
+        </tr>
+        <tr>
+          <th scope="row">Longitude:</th>
+          <td>{longitude}</td>
+        </tr>
+        <tr>
+          <th scope="row">BDP Status:</th>
+          <td>Result here</td>
+        </tr>
+        <tr>
+          <th scope="row">R-PSB Deployment Status:</th>
+          <td>Result here</td>
+        </tr>
+        <tr>
+          <th scope="row">Address:</th>
+          <td>{address}</td>
+        </tr>
+      </tbody>
+    </Table>
   );
 }
 
