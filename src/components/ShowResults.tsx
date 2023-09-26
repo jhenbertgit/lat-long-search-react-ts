@@ -20,14 +20,6 @@ function ShowResults(props: Props) {
           <td>{longitude}</td>
         </tr>
         <tr>
-          <th scope="row">BDP Status:</th>
-          <td>Result here</td>
-        </tr>
-        <tr>
-          <th scope="row">R-PSB Deployment Status:</th>
-          <td>Result here</td>
-        </tr>
-        <tr>
           <th scope="row">Address:</th>
           <td>{address}</td>
         </tr>

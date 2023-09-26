@@ -67,6 +67,15 @@ function LatLongSearch() {
       const data = await response.json();
       const results = data.results[0] || {};
 
+      const resRpsb = await fetch(
+        "http://localhost:5000/api/v1/rpsbdeployment"
+      );
+      const dataRpsb = await resRpsb.json();
+      const mappedItems = dataRpsb.map((item) =>
+        [item.brgy, item.municipality, item.province].join(", ")
+      );
+      console.log(mappedItems);
+
       dispatch({
         type: "dataset",
         dataset: {
@@ -102,8 +111,8 @@ function LatLongSearch() {
   const isLoading = state.status === "loading";
 
   return (
-    <Row className="justify-content-center">
-      <Col md={8} className="mt-5">
+    <>
+      <Col md={12} className="mt-5">
         <Form
           alertIsOpen={state.affirmative}
           alertToggle={onDismissed}
@@ -114,7 +123,7 @@ function LatLongSearch() {
           isLoading={isLoading}
         />
       </Col>
-      <Col md={8} className="mt-5 d-flex flex-column align-items-center">
+      <Col md={12} className="mt-5 d-flex flex-column align-items-center">
         {isLoading && (
           <Spinner
             color="primary"
@@ -129,7 +138,7 @@ function LatLongSearch() {
           />
         )}
       </Col>
-    </Row>
+    </>
   );
 }
 export default LatLongSearch;
