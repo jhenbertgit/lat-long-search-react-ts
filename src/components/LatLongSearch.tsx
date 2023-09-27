@@ -1,5 +1,5 @@
 import React, { useReducer } from "react";
-import { Col, Row, Spinner } from "reactstrap";
+import { Col, Spinner } from "reactstrap";
 import ShowResults from "./ShowResults";
 import Form from "./Form";
 

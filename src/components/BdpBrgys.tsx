@@ -60,9 +60,9 @@ function BdpBrgys() {
   } else {
     return (
       <Col>
-        <Col className="d-flex gap-2">
+        <Col className="d-flex align-items-end gap-2">
           <Col md={6}>
-            <Label for="search-form" />
+            <Label for="search-form">Enter Barangay or City/Municipality</Label>
             <Input
               type="search"
               name="search-form"
@@ -93,7 +93,9 @@ function BdpBrgys() {
         <ListGroup className="mt-4">
           {search(items).map((item) => (
             <ListGroupItem key={item.id}>
-              {item.barangay}, {item.city_municipality}, {item.province}
+              {[item.barangay, item.city_municipality, item.province].join(
+                ", "
+              )}
             </ListGroupItem>
           ))}
         </ListGroup>
