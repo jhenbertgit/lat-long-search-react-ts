@@ -59,7 +59,7 @@ function BdpBrgys() {
     return <div>Loading...</div>;
   } else {
     return (
-      <Col>
+      <Col md={12} className="mt-4">
         <Col className="d-flex align-items-end gap-2">
           <Col md={6}>
             <Label for="search-form">Enter Barangay or City/Municipality</Label>

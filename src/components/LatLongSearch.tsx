@@ -67,15 +67,6 @@ function LatLongSearch() {
       const data = await response.json();
       const results = data.results[0] || {};
 
-      const resRpsb = await fetch(
-        "http://localhost:5000/api/v1/rpsbdeployment"
-      );
-      const dataRpsb = await resRpsb.json();
-      const mappedItems = dataRpsb.map((item) =>
-        [item.brgy, item.municipality, item.province].join(", ")
-      );
-      console.log(mappedItems);
-
       dispatch({
         type: "dataset",
         dataset: {
