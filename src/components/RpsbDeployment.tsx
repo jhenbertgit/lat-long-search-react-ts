@@ -11,7 +11,7 @@ interface RpsbData {
 
 function RpsbDeployment() {
   const [rpsbDeployment, setRpsbDeployment] = useState<RpsbData[]>([]);
-  const [q, setQ] = useState<string>("");
+  const [q, setQ] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -25,7 +25,7 @@ function RpsbDeployment() {
       setRpsbDeployment(response);
     } catch (error) {
       setIsLoaded(true);
-      setError(error);
+      setError(error as Error);
     }
   }, []);
 
@@ -33,11 +33,14 @@ function RpsbDeployment() {
     fetchData();
   }, [fetchData]);
 
-  function search(items) {
+  function search(items: RpsbData[]) {
     return items.filter((item) => {
       return searchParam.some((newItem) => {
         return (
-          item[newItem].toString().toLowerCase().indexOf(q.toLowerCase()) > -1
+          item[newItem as keyof RpsbData]
+            .toString()
+            .toLowerCase()
+            .indexOf(q.toLowerCase()) > -1
         );
       });
     });

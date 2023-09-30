@@ -8,12 +8,13 @@ interface Brgy {
   province: string;
   region: string;
 }
+
 function BdpBrgys() {
   const [error, setError] = useState<Error | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [items, setItems] = useState<Brgy[]>([]);
-  const [q, setQ] = useState<string>("");
-  const [filterParam, setFilterParam] = useState(["All"]);
+  const [q, setQ] = useState("");
+  const [filterParam, setFilterParam] = useState("All");
 
   const searchParam = ["barangay", "city_municipality"];
 
@@ -28,7 +29,7 @@ function BdpBrgys() {
       setItems(dataBdp);
     } catch (error) {
       setIsLoaded(true);
-      setError(error);
+      setError(error as Error);
     }
   }, []);
 
@@ -36,20 +37,26 @@ function BdpBrgys() {
     fetchBrgysData();
   }, [fetchBrgysData]);
 
-  function search(items) {
-    return items.filter((item) => {
-      if (item.region == filterParam) {
+  function search(items: Brgy[]) {
+    return items.filter((item: Brgy) => {
+      if (filterParam === "All" || item.region === filterParam) {
         return searchParam.some((newItem) => {
           return (
-            item[newItem].toString().toLowerCase().indexOf(q.toLowerCase()) > -1
+            item[newItem as keyof Brgy] //using type assertion
+              .toString()
+              .toLowerCase()
+              .indexOf(q.toLowerCase()) > -1
           );
         });
-      } else if (filterParam == "All") {
-        return searchParam.some((newItem) => {
-          return (
-            item[newItem].toString().toLowerCase().indexOf(q.toLowerCase()) > -1
-          );
-        });
+        // } else if (filterParam === "All") {
+        //   return searchParam.some((newItem) => {
+        //     return (
+        //       item[newItem as keyof Brgy]
+        //         .toString()
+        //         .toLowerCase()
+        //         .indexOf(q.toLowerCase()) > -1
+        //     );
+        //   });
       }
     });
   }
