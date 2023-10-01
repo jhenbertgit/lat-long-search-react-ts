@@ -6,37 +6,54 @@ import BdpBrgys from "./components/BdpBrgys";
 import RpsbDeployment from "./components/RpsbDeployment";
 
 type Action = {
-  latLong: string;
-  bdp: string;
-  rpsb: string;
+  status: "latLong" | "bdp" | "rpsb";
 };
 
 function App() {
-  const [action, setAction] = useState<Action>("latLong");
+  const [action, setAction] = useState<Action>({ status: "latLong" });
 
   let content;
 
-  if (action === "latLong") {
-    content = <LatLongSearch />;
-  }
-  if (action === "bdp") {
-    content = <BdpBrgys />;
+  switch (action.status) {
+    case "bdp":
+      content = <BdpBrgys />;
+      break;
+
+    case "rpsb":
+      content = <RpsbDeployment />;
+      break;
+
+    default:
+      content = <LatLongSearch />;
+      break;
   }
 
-  if (action === "rpsb") {
-    content = <RpsbDeployment />;
-  }
+  // if (action.status === "latLong") {
+  //   content = <LatLongSearch />;
+  // }
+  // if (action.status === "bdp") {
+  //   content = <BdpBrgys />;
+  // }
+
+  // if (action.status === "rpsb") {
+  //   content = <RpsbDeployment />;
+  // }
 
   return (
     <Container>
       <Row className="justifiy-content-center">
         <Col className="mt-4">
           <Label for="select">Select Action</Label>
+
+          {/**using type assertion to ensure that the e.target.value is the value
+          for status property of type Action*/}
           <Input
             type="select"
             name="select"
             id="select"
-            onChange={(e) => setAction(e.target.value)}
+            onChange={(e) =>
+              setAction({ status: e.target.value as Action[keyof Action] })
+            }
           >
             <option value="latLong">Search Lat Long</option>
             <option value="bdp">Search BDP Brgy</option>

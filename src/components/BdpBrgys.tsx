@@ -42,7 +42,7 @@ function BdpBrgys() {
       if (filterParam === "All" || item.region === filterParam) {
         return searchParam.some((newItem) => {
           return (
-            item[newItem as keyof Brgy] //using type assertion
+            item[newItem as keyof Brgy] //type assertion using keyof operator
               .toString()
               .toLowerCase()
               .indexOf(q.toLowerCase()) > -1
