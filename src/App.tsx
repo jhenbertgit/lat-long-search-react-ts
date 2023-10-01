@@ -4,17 +4,26 @@ import { Row, Container, Col, Label, Input } from "reactstrap";
 import LatLongSearch from "./components/LatLongSearch";
 import BdpBrgys from "./components/BdpBrgys";
 import RpsbDeployment from "./components/RpsbDeployment";
+import Events from "./components/Events";
 
 type Action = {
-  status: "latLong" | "bdp" | "rpsb";
+  status: "latLong" | "bdp" | "rpsb" | "events";
 };
 
 function App() {
-  const [action, setAction] = useState<Action>({ status: "latLong" });
+  const [action, setAction] = useState<Action>({ status: "events" });
 
   let content;
 
   switch (action.status) {
+    case "events":
+      content = <Events />;
+      break;
+
+    case "latLong":
+      content = <LatLongSearch />;
+      break;
+
     case "bdp":
       content = <BdpBrgys />;
       break;
@@ -24,7 +33,7 @@ function App() {
       break;
 
     default:
-      content = <LatLongSearch />;
+      content = <Events />;
       break;
   }
 
@@ -55,6 +64,7 @@ function App() {
               setAction({ status: e.target.value as Action[keyof Action] })
             }
           >
+            <option value="events">Show Events</option>
             <option value="latLong">Search Lat Long</option>
             <option value="bdp">Search BDP Brgy</option>
             <option value="rpsb">Search barangay with R-PSB deployment</option>

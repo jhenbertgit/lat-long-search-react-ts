@@ -2,11 +2,11 @@ import { Alert, Label, Input, Button, Spinner } from "reactstrap";
 
 type Props = {
   alertIsOpen: boolean;
-  alertToggle: VoidFunction;
+  alertToggle(): void;
   query: string;
-  inputOnChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  inputOnChange(event: React.ChangeEvent<HTMLInputElement>): void;
   btnDisabled: boolean;
-  btnOnClick: VoidFunction;
+  btnOnClick(): void;
   isLoading: boolean;
 };
 

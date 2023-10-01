@@ -21,9 +21,6 @@ function BdpBrgys() {
   const fetchBrgysData = useCallback(async () => {
     try {
       const resBdp = await fetch("http://localhost:5000/api/v1/bdpbrgys");
-      if (!resBdp.ok) {
-        throw new Error("Fetching data failed");
-      }
       const dataBdp: Brgy[] = await resBdp.json();
       setIsLoaded(true);
       setItems(dataBdp);
