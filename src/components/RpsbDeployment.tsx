@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ListGroup, ListGroupItem, Input, Col } from "reactstrap";
+import { ListGroup, ListGroupItem, Input, Col, Spinner } from "reactstrap";
 
 interface RpsbData {
   id: number;
@@ -49,7 +49,14 @@ function RpsbDeployment() {
   if (error) {
     return <div>Error: {error.message}</div>;
   } else if (!isLoaded) {
-    return <div>Loading...</div>;
+    return (
+      <Col className="mt-4 d-flex justify-content-center">
+        <Spinner
+          color="primary"
+          style={{ height: "7rem", width: "7rem" }}
+        ></Spinner>
+      </Col>
+    );
   } else {
     return (
       <Col md={12} className="mt-4">

@@ -50,8 +50,8 @@ function App() {
 
   return (
     <Container>
-      <Row className="justifiy-content-center">
-        <Col className="mt-4">
+      <Row>
+        <Col md={12} className="mt-4">
           <Label for="select">Select Action</Label>
 
           {/**using type assertion to ensure that the e.target.value is the value
