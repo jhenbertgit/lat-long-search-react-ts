@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button, Table, Spinner, Col } from "reactstrap";
+import ModalEvents from "./UI/ModalEvents";
 
 const initialData = {
   id: 0,
@@ -28,11 +29,14 @@ const initialData = {
   rpsb_deployment_status: " ",
 };
 
+const url = import.meta.env.VITE_URL;
+
 function Events() {
   const [data, setData] = useState([initialData]);
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [modal, setModal] = useState(false);
 
   const onDelete = (id: number) => {
     setData((prevData) => prevData.filter((item) => item.id !== id));
@@ -52,13 +56,15 @@ function Events() {
     );
   };
 
+  const toggle = () => setModal(!modal);
+
   let content;
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const eventsData = await fetch("http://localhost:5000/api/v1/events");
+        const eventsData = await fetch(`${url}:5000/api/v1/events`);
         const response = await eventsData.json();
         setData(response);
         setIsLoading(false);
@@ -122,7 +128,17 @@ function Events() {
       </Col>
     );
   }
-  return <Col className="mt-4 d-flex justify-content-center">{content}</Col>;
+  return (
+    <>
+      <Col className="mt-3">
+        <Button onClick={toggle}>Add Events</Button>
+        <ModalEvents modalOpen={modal} toggle={toggle} />
+      </Col>
+      <Col md={12} className="mt-4 d-flex justify-content-center">
+        {content}
+      </Col>
+    </>
+  );
 }
 
 export default Events;

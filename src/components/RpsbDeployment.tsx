@@ -9,6 +9,8 @@ interface RpsbData {
   region: string;
 }
 
+const url = import.meta.env.VITE_URL;
+
 function RpsbDeployment() {
   const [rpsbDeployment, setRpsbDeployment] = useState<RpsbData[]>([]);
   const [q, setQ] = useState("");
@@ -19,7 +21,7 @@ function RpsbDeployment() {
 
   const fetchData = useCallback(async () => {
     try {
-      const data = await fetch("http://localhost:5000/api/v1/rpsbdeployment");
+      const data = await fetch(`${url}:5000/api/v1/rpsbdeployment`);
       const response: RpsbData[] = await data.json();
       setIsLoaded(true);
       setRpsbDeployment(response);

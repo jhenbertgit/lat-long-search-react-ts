@@ -1,5 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { ListGroup, ListGroupItem, Label, Input, Col, Spinner } from "reactstrap";
+import {
+  ListGroup,
+  ListGroupItem,
+  Label,
+  Input,
+  Col,
+  Spinner,
+} from "reactstrap";
 
 interface Brgy {
   id: number;
@@ -8,6 +15,8 @@ interface Brgy {
   province: string;
   region: string;
 }
+
+const url = import.meta.env.VITE_URL;
 
 function BdpBrgys() {
   const [error, setError] = useState<Error | null>(null);
@@ -20,7 +29,7 @@ function BdpBrgys() {
 
   const fetchBrgysData = useCallback(async () => {
     try {
-      const resBdp = await fetch("http://localhost:5000/api/v1/bdpbrgys");
+      const resBdp = await fetch(`${url}:5000/api/v1/bdpbrgys`);
       const dataBdp: Brgy[] = await resBdp.json();
       setIsLoaded(true);
       setItems(dataBdp);
