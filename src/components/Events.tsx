@@ -114,7 +114,8 @@ function Events() {
   };
 
   const onEdit = (argsid: number) => {
-    const itemToEdit = data.find((item) => item.id === argsid);
+    //data must no be null to avoid runtime error (non-null assertion)
+    const itemToEdit: Data = data.find((item) => item.id === argsid)!;
     const { id, ...formEditData } = itemToEdit;
     if (itemToEdit) {
       setEditedItem(itemToEdit);
