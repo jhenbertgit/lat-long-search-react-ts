@@ -90,7 +90,7 @@ const url = import.meta.env.VITE_URL;
 function Events() {
   const [data, setData] = useState<Data[]>([initialData]);
   const [error, setError] = useState<Error | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [modal, setModal] = useState(false);
@@ -140,7 +140,6 @@ function Events() {
     } else {
       alert("submit button clicked");
     }
-
     setIsEditing(false);
     setModal(false);
   };
@@ -158,13 +157,16 @@ function Events() {
       });
       if (response.ok) {
         setIsSent(true);
+        const { message } = await response.json();
+        return message;
+      } else {
+        setIsSent(false);
+        setError(error as Error);
       }
-      const { message } = await response.json();
-      return message;
     } catch (error) {
       setError(error as Error);
+      setIsSent(false);
     }
-    setIsSent(false);
   };
 
   /**pagination logic start */
@@ -213,14 +215,14 @@ function Events() {
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
       try {
         const eventsData = await fetch(`${url}:5000/api/v1/events`);
         const response = await eventsData.json();
-        setData(response);
-        setIsLoading(false);
+        setIsLoaded(true);
         setIsSuccess(true);
+        setData(response);
       } catch (error) {
+        setIsLoaded(true);
         setError(error as Error);
       }
     };
@@ -228,10 +230,17 @@ function Events() {
   }, []);
 
   if (error) {
-    content = <>Error: {error.message}</>;
+    content = (
+      <UncontrolledAlert
+        color="warning"
+        className="position-absolute top-0 start-50 translate-middle-x mt-2"
+      >
+        {error.name}: {error.message}
+      </UncontrolledAlert>
+    );
   }
 
-  if (isLoading) {
+  if (!isLoaded) {
     content = (
       <Spinner
         color="primary"

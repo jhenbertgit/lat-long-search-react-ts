@@ -1,5 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { ListGroup, ListGroupItem, Input, Col, Spinner } from "reactstrap";
+import {
+  ListGroup,
+  ListGroupItem,
+  Input,
+  Col,
+  Spinner,
+  UncontrolledAlert,
+} from "reactstrap";
 
 interface RpsbData {
   id: number;
@@ -49,7 +56,16 @@ function RpsbDeployment() {
   }
 
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return (
+      <Col className="mt-4 d-flex justify-content-center">
+        <UncontrolledAlert
+          color="warning"
+          className="position-absolute top-0 start-50 translate-middle-x mt-2"
+        >
+          {error.name}: {error.message}
+        </UncontrolledAlert>
+      </Col>
+    );
   } else if (!isLoaded) {
     return (
       <Col className="mt-4 d-flex justify-content-center">

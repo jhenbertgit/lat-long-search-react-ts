@@ -262,6 +262,7 @@ function FormEvents({
           value={formValue.bdp_status}
           onChange={onChange}
         >
+          <option>Select...</option>
           <option value="NON-BDP">Non-BDP</option>
           <option value="BDP">BDP</option>
         </Input>
@@ -295,6 +296,7 @@ function FormEvents({
           value={formValue.rpsb_deployment_status}
           onChange={onChange}
         >
+          <option>Select...</option>
           <option value="WITH DEPLOYMENT">With Deployment</option>
           <option value="WITHOUT DEPLOYMENT">Without Deployment</option>
         </Input>
