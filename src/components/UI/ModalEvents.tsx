@@ -22,13 +22,12 @@ type ModalProps = {
     province: string;
     details_of_activity: string;
     mgrs: string;
-    latitude: number;
-    longitude: number;
+    latitude: string;
+    longitude: string;
     bdp_status: string;
     gf_vertical_units: string;
     type: string;
     rpsb_deployment_status: string;
-    
   };
   formOnChange(
     e: React.ChangeEvent<
@@ -42,7 +41,6 @@ type ModalProps = {
 
 function ModalEvents({
   toggle,
-
   modalOpen,
   isEditing,
   formOnChange,
@@ -51,19 +49,17 @@ function ModalEvents({
 }: ModalProps) {
   return (
     <Modal isOpen={modalOpen} toggle={toggle}>
-      <ModalHeader toggle={toggle}>Add Events</ModalHeader>
+      <ModalHeader toggle={toggle}>
+        {isEditing ? "Edit Events" : "Add Events"}
+      </ModalHeader>
       <ModalBody>
         <FormEvents
           formValue={formValue}
           onChange={formOnChange}
           onSubmit={formOnSubmit}
           isEditing={isEditing}
+          toggle={toggle}
         />
-      </ModalBody>
-      <ModalBody>
-        <Button color="secondary" onClick={toggle}>
-          Cancel
-        </Button>
       </ModalBody>
     </Modal>
   );

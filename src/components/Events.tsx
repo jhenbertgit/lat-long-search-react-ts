@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { Button, Table, Spinner, Col, UncontrolledAlert } from "reactstrap";
+import { Button, Spinner, Col, UncontrolledAlert } from "reactstrap";
 import ModalEvents from "./UI/ModalEvents";
 import Paginations from "./UI/Paginations";
+import Filters from "./UI/Filters";
+import TableEvents from "./TableEvents";
 
 type UpdatedData = {
   unit_reported: string;
@@ -21,19 +23,19 @@ type UpdatedData = {
   province: string;
   details_of_activity: string;
   mgrs: string;
-  latitude: number;
-  longitude: number;
+  latitude: string;
+  longitude: string;
   bdp_status: string;
   gf_vertical_units: string;
   type: string;
   rpsb_deployment_status: string;
 };
 
-type Data = {
+export type Data = {
   id: number;
 } & UpdatedData;
 
-const initialData = {
+const initialData: Data = {
   id: 0,
   unit_reported: " ",
   source_of_report: " ",
@@ -52,14 +54,14 @@ const initialData = {
   province: " ",
   details_of_activity: " ",
   mgrs: " ",
-  latitude: 0,
-  longitude: 0,
+  latitude: " ",
+  longitude: " ",
   bdp_status: " ",
   gf_vertical_units: " ",
   type: " ",
   rpsb_deployment_status: " ",
 };
-const initialFormData = {
+const initialFormData: UpdatedData = {
   unit_reported: " ",
   source_of_report: " ",
   date_of_report: "",
@@ -77,8 +79,8 @@ const initialFormData = {
   province: " ",
   details_of_activity: " ",
   mgrs: " ",
-  latitude: 0,
-  longitude: 0,
+  latitude: "",
+  longitude: "",
   bdp_status: " ",
   gf_vertical_units: " ",
   type: " ",
@@ -88,7 +90,7 @@ const initialFormData = {
 const url = import.meta.env.VITE_URL;
 
 function Events() {
-  const [data, setData] = useState<Data[]>([initialData]);
+  const [data, setData] = useState([initialData]);
   const [error, setError] = useState<Error | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -100,48 +102,20 @@ function Events() {
   const [resMsg, setResMsg] = useState("");
   const [isSent, setIsSent] = useState(false);
 
-  const dteOption: Intl.DateTimeFormatOptions = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: "Asia/Manila",
-  };
-
   /**button functions */
   const onDelete = (id: number) => {
     setData((prevData) => prevData.filter((item) => item.id !== id));
   };
 
-  const onEdit = (argsid: number) => {
+  const onEdit = (id: number) => {
     //data must no be null to avoid runtime error (non-null assertion)
-    const itemToEdit: Data = data.find((item) => item.id === argsid)!;
-    const { id, ...formEditData } = itemToEdit;
+    const itemToEdit: Data = data.find((item) => item.id === id)!;
     if (itemToEdit) {
       setEditedItem(itemToEdit);
-      setFormData({ ...formEditData });
+      setFormData(itemToEdit);
       setModal(true);
       setIsEditing(true);
     }
-  };
-
-  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setData((prevData) =>
-      prevData.map((item) =>
-        item.id === editedItem.id ? { ...item, ...formData } : item
-      )
-    );
-    //sending updated data to database
-    if (isEditing) {
-      const { id } = editedItem;
-      const message = await updateData(id, formData);
-      setResMsg(message);
-    } else {
-      alert("submit button clicked");
-    }
-    setIsEditing(false);
-    setModal(false);
   };
 
   //function to update the data in database
@@ -159,13 +133,31 @@ function Events() {
         setIsSent(true);
         const { message } = await response.json();
         return message;
-      } else {
-        setIsSent(false);
-        setError(error as Error);
       }
     } catch (error) {
-      setError(error as Error);
       setIsSent(false);
+      setError(error as Error);
+    }
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setData((prevData) =>
+      prevData.map((item) =>
+        item.id === editedItem.id ? { ...item, ...formData } : item
+      )
+    );
+    //sending updated data to database
+    if (isEditing) {
+      const { id } = editedItem;
+      const message = await updateData(id, formData);
+      setResMsg(message);
+    }
+    setIsEditing(false);
+    setModal(false);
+
+    if (!isEditing) {
+      alert("submit button clicked");
     }
   };
 
@@ -211,8 +203,6 @@ function Events() {
     setIsEditing(false);
   };
 
-  let content;
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -228,6 +218,8 @@ function Events() {
     };
     fetchData();
   }, []);
+
+  let content;
 
   if (error) {
     content = (
@@ -252,7 +244,7 @@ function Events() {
   if (isSuccess) {
     content = (
       <Col className="w-100">
-        {isSent && (
+        {!!isSent && (
           <UncontrolledAlert
             color="info"
             className="position-absolute top-0 start-50 translate-middle-x mt-2"
@@ -267,57 +259,11 @@ function Events() {
           currentPage={currentPage}
           onPageChange={handlePageChange}
         />
-
-        <Table hover size="sm" responsive>
-          <thead>
-            <tr>
-              <th>Source of Information</th>
-              <th>Threat Group</th>
-              <th>Date of Activity</th>
-              <th>Type of Activity</th>
-              <th>Activity</th>
-              <th>Location</th>
-              <th>Details of Activity</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentData.map((item) => (
-              <tr key={item.id}>
-                <td>{item.unit_reported}</td>
-                <td>{item.enemy_unit}</td>
-                <td>
-                  {new Intl.DateTimeFormat("fil-PH", dteOption).format(
-                    new Date(item.date_of_activity)
-                  )}
-                </td>
-                <td>{item.type_of_activity}</td>
-                <td>{item.activity}</td>
-                <td>
-                  {[item.brgy, item.municipality, item.province].join(", ")}
-                </td>
-                <td>{item.details_of_activity}</td>
-                <td>
-                  <Button
-                    color="primary"
-                    className="mt-2"
-                    onClick={() => onEdit(item.id)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    color="danger"
-                    disabled
-                    className="mt-2"
-                    onClick={() => onDelete(item.id)}
-                  >
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <TableEvents
+          currentData={currentData}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
       </Col>
     );
   }
@@ -327,11 +273,14 @@ function Events() {
         <Button color="primary" onClick={toggle}>
           Add Events
         </Button>
+
+        <Filters />
+
         <ModalEvents
           modalOpen={modal}
           toggle={toggle}
           isEditing={isEditing}
-          formOnChange={isEditing ? handleFormChange : () => {}}
+          formOnChange={handleFormChange}
           formValue={isEditing ? formData : initialFormData}
           formOnSubmit={handleFormSubmit}
         />

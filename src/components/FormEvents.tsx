@@ -27,14 +27,15 @@ type FormEventsProps = {
     province: string;
     details_of_activity: string;
     mgrs: string;
-    latitude: number;
-    longitude: number;
+    latitude: string;
+    longitude: string;
     bdp_status: string;
     gf_vertical_units: string;
     type: string;
     rpsb_deployment_status: string;
   };
   isEditing: boolean;
+  toggle(): void;
 };
 
 function FormEvents({
@@ -42,6 +43,7 @@ function FormEvents({
   onSubmit,
   formValue,
   isEditing,
+  toggle,
 }: FormEventsProps) {
   const formatDateActivity = (dateStr: string) => {
     const parseDate = parseISO(dateStr);
@@ -77,6 +79,7 @@ function FormEvents({
           value={formValue.unit_reported}
           onChange={onChange}
         >
+          <option>Select...</option>
           <option value="PRO 10">PRO 10</option>
           <option value="PRO 11">PRO 11</option>
           <option value="PRO 13">PRO 13</option>
@@ -127,6 +130,7 @@ function FormEvents({
           value={formValue.type_of_activity}
           onChange={onChange}
         >
+          <option>Select...</option>
           <option value="NON-VIOLENT">Non-Violent</option>
           <option value="VIOLENT">Violent</option>
           <option value="GTO">GTO</option>
@@ -282,6 +286,7 @@ function FormEvents({
           value={formValue.type}
           onChange={onChange}
         >
+          <option>Select...</option>
           <option value="CTG">CTG</option>
           <option value="LTG">LTG</option>
           <option value="PAGS">PAGs</option>
@@ -303,6 +308,9 @@ function FormEvents({
       </FormGroup>
       <Button color="primary" type="submit">
         {!isEditing ? "Submit" : "Save"}
+      </Button>
+      <Button className="ms-2" color="secondary" onClick={toggle}>
+        Cancel
       </Button>
     </Form>
   );
