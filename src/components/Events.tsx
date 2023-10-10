@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
-import { Button, Spinner, Col, UncontrolledAlert } from "reactstrap";
+import { Button, Table, Spinner, Col, UncontrolledAlert } from "reactstrap";
 import ModalEvents from "./UI/ModalEvents";
 import Paginations from "./UI/Paginations";
-import Filters from "./UI/Filters";
-import TableEvents from "./TableEvents";
 
 type UpdatedData = {
   unit_reported: string;
@@ -79,8 +77,8 @@ const initialFormData: UpdatedData = {
   province: " ",
   details_of_activity: " ",
   mgrs: " ",
-  latitude: "",
-  longitude: "",
+  latitude: " ",
+  longitude: " ",
   bdp_status: " ",
   gf_vertical_units: " ",
   type: " ",
@@ -90,9 +88,9 @@ const initialFormData: UpdatedData = {
 const url = import.meta.env.VITE_URL;
 
 function Events() {
-  const [data, setData] = useState([initialData]);
+  const [data, setData] = useState<Data[]>([initialData]);
   const [error, setError] = useState<Error | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [modal, setModal] = useState(false);
@@ -102,41 +100,28 @@ function Events() {
   const [resMsg, setResMsg] = useState("");
   const [isSent, setIsSent] = useState(false);
 
+  const dteOption: Intl.DateTimeFormatOptions = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "Asia/Manila",
+  };
+
   /**button functions */
   const onDelete = (id: number) => {
     setData((prevData) => prevData.filter((item) => item.id !== id));
   };
 
-  const onEdit = (id: number) => {
-    //data must no be null to avoid runtime error (non-null assertion)
-    const itemToEdit: Data = data.find((item) => item.id === id)!;
+  const onEdit = (argsid: number) => {
+    //data must not be null to avoid runtime error (non-null assertion)
+    const itemToEdit: Data = data.find((item) => item.id === argsid)!;
+    const { id, ...formEditData } = itemToEdit;
     if (itemToEdit) {
       setEditedItem(itemToEdit);
-      setFormData(itemToEdit);
+      setFormData({ ...formEditData });
       setModal(true);
       setIsEditing(true);
-    }
-  };
-
-  //function to update the data in database
-  const updateData = async (id: number, updatedData: UpdatedData) => {
-    try {
-      const response = await fetch(`${url}:5000/api/v1/events/${id}`, {
-        method: "PUT",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedData),
-      });
-      if (response.ok) {
-        setIsSent(true);
-        const { message } = await response.json();
-        return message;
-      }
-    } catch (error) {
-      setIsSent(false);
-      setError(error as Error);
     }
   };
 
@@ -152,13 +137,34 @@ function Events() {
       const { id } = editedItem;
       const message = await updateData(id, formData);
       setResMsg(message);
-    }
-    setIsEditing(false);
-    setModal(false);
-
-    if (!isEditing) {
+    } else {
       alert("submit button clicked");
     }
+
+    setIsEditing(false);
+    setModal(false);
+  };
+
+  //function to update the data in database
+  const updateData = async (id: number, updatedData: UpdatedData) => {
+    try {
+      const response = await fetch(`${url}:5000/api/v1/events/${id}`, {
+        method: "PUT",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      });
+      if (response.ok) {
+        setIsSent(true);
+      }
+      const { message } = await response.json();
+      return message;
+    } catch (error) {
+      setError(error as Error);
+    }
+    setIsSent(false);
   };
 
   /**pagination logic start */
@@ -203,36 +209,29 @@ function Events() {
     setIsEditing(false);
   };
 
+  let content;
+
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const eventsData = await fetch(`${url}:5000/api/v1/events`);
         const response = await eventsData.json();
-        setIsLoaded(true);
-        setIsSuccess(true);
         setData(response);
+        setIsLoading(false);
+        setIsSuccess(true);
       } catch (error) {
-        setIsLoaded(true);
         setError(error as Error);
       }
     };
     fetchData();
   }, []);
 
-  let content;
-
   if (error) {
-    content = (
-      <UncontrolledAlert
-        color="warning"
-        className="position-absolute top-0 start-50 translate-middle-x mt-2"
-      >
-        {error.name}: {error.message}
-      </UncontrolledAlert>
-    );
+    content = <>Error: {error.message}</>;
   }
 
-  if (!isLoaded) {
+  if (isLoading) {
     content = (
       <Spinner
         color="primary"
@@ -244,7 +243,7 @@ function Events() {
   if (isSuccess) {
     content = (
       <Col className="w-100">
-        {!!isSent && (
+        {isSent && (
           <UncontrolledAlert
             color="info"
             className="position-absolute top-0 start-50 translate-middle-x mt-2"
@@ -259,11 +258,57 @@ function Events() {
           currentPage={currentPage}
           onPageChange={handlePageChange}
         />
-        <TableEvents
-          currentData={currentData}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
+
+        <Table hover size="sm" responsive>
+          <thead>
+            <tr>
+              <th>Source of Information</th>
+              <th>Threat Group</th>
+              <th>Date of Activity</th>
+              <th>Type of Activity</th>
+              <th>Activity</th>
+              <th>Location</th>
+              <th>Details of Activity</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentData.map((item) => (
+              <tr key={item.id}>
+                <td>{item.unit_reported}</td>
+                <td>{item.enemy_unit}</td>
+                <td>
+                  {new Intl.DateTimeFormat("fil-PH", dteOption).format(
+                    new Date(item.date_of_activity)
+                  )}
+                </td>
+                <td>{item.type_of_activity}</td>
+                <td>{item.activity}</td>
+                <td>
+                  {[item.brgy, item.municipality, item.province].join(", ")}
+                </td>
+                <td>{item.details_of_activity}</td>
+                <td>
+                  <Button
+                    color="primary"
+                    className="mt-2"
+                    onClick={() => onEdit(item.id)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    color="danger"
+                    disabled
+                    className="mt-2"
+                    onClick={() => onDelete(item.id)}
+                  >
+                    Delete
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </Col>
     );
   }
@@ -273,14 +318,11 @@ function Events() {
         <Button color="primary" onClick={toggle}>
           Add Events
         </Button>
-
-        <Filters />
-
         <ModalEvents
           modalOpen={modal}
           toggle={toggle}
           isEditing={isEditing}
-          formOnChange={handleFormChange}
+          formOnChange={isEditing ? handleFormChange : () => {}}
           formValue={isEditing ? formData : initialFormData}
           formOnSubmit={handleFormSubmit}
         />

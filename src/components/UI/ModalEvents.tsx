@@ -1,4 +1,4 @@
-import { Modal, ModalBody, ModalHeader, Button } from "reactstrap";
+import { Modal, ModalBody, ModalHeader } from "reactstrap";
 import FormEvents from "../FormEvents";
 
 type ModalProps = {
