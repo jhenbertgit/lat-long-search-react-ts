@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardBody,
@@ -13,9 +13,16 @@ import {
   DropdownItem,
 } from "reactstrap";
 
-function Filters() {
+type FiltersProp = {
+  filterOnChange(args: string): void;
+};
+
+function Filters({ filterOnChange }: FiltersProp) {
   const [isOpen, setIsOpen] = useState(false);
+
   const toggle = () => setIsOpen(!isOpen);
+
+  useEffect(() => {}, []);
   return (
     <>
       <UncontrolledDropdown className="mt-3">
@@ -33,8 +40,13 @@ function Filters() {
           <CardBody>
             <Form>
               <FormGroup check inline>
-                <Input type="checkbox" />
-                <Label>NEMRC</Label>
+                <Input
+                  id="nemrc"
+                  type="checkbox"
+                  value="NEMRC"
+                  onChange={(e) => filterOnChange(e.target.value)}
+                />
+                <Label for="nemrc">NEMRC</Label>
               </FormGroup>
 
               <FormGroup check inline>

@@ -26,7 +26,7 @@ function BdpBrgys() {
   const [q, setQ] = useState("");
   const [filterParam, setFilterParam] = useState("All");
 
-  const searchParam = ["barangay", "city_municipality"];
+  const searchParam: (keyof Brgy)[] = ["barangay", "city_municipality"];
 
   const fetchBrgysData = useCallback(async () => {
     try {
@@ -49,21 +49,9 @@ function BdpBrgys() {
       if (filterParam === "All" || item.region === filterParam) {
         return searchParam.some((newItem) => {
           return (
-            item[newItem as keyof Brgy] //type assertion using keyof operator
-              .toString()
-              .toLowerCase()
-              .indexOf(q.toLowerCase()) > -1
+            item[newItem].toString().toLowerCase().indexOf(q.toLowerCase()) > -1
           );
         });
-        // } else if (filterParam === "All") {
-        //   return searchParam.some((newItem) => {
-        //     return (
-        //       item[newItem as keyof Brgy]
-        //         .toString()
-        //         .toLowerCase()
-        //         .indexOf(q.toLowerCase()) > -1
-        //     );
-        //   });
       }
     });
   }

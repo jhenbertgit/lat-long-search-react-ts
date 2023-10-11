@@ -21,53 +21,58 @@ function TableEvents({ currentData, onEdit, onDelete }: TableEventsProps) {
     day: "numeric",
     timeZone: "Asia/Manila",
   };
+
   return (
-    <Table hover size="sm" responsive>
-      <thead>
-        <tr>
-          <th>Source of Information</th>
-          <th>Threat Group</th>
-          <th>Date of Activity</th>
-          <th>Type of Activity</th>
-          <th>Activity</th>
-          <th>Location</th>
-          <th>Details of Activity</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {currentData.map((item) => (
-          <tr key={item.id}>
-            <td>{item.unit_reported}</td>
-            <td>{item.enemy_unit}</td>
-            <td>
-              {new Intl.DateTimeFormat("fil-PH", dteOption).format(
-                new Date(item.date_of_activity)
-              )}
-            </td>
-            <td>{item.type_of_activity}</td>
-            <td>{item.activity}</td>
-            <td>{[item.brgy, item.municipality, item.province].join(", ")}</td>
-            <td>{item.details_of_activity}</td>
-            <td>
-              <UncontrolledDropdown className="mt-4">
-                <DropdownToggle caret color="primary">
-                  Actions
-                </DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem onClick={() => onEdit(item.id)}>
-                    Edit
-                  </DropdownItem>
-                  <DropdownItem disabled onClick={() => onDelete(item.id)}>
-                    Delete
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-            </td>
+    <>
+      <Table hover size="sm" responsive>
+        <thead>
+          <tr>
+            <th>Source of Information</th>
+            <th>Threat Group</th>
+            <th>Date of Activity</th>
+            <th>Type of Activity</th>
+            <th>Activity</th>
+            <th>Location</th>
+            <th>Details of Activity</th>
+            <th>Action</th>
           </tr>
-        ))}
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+          {currentData.map((item) => (
+            <tr key={item.id}>
+              <td>{item.unit_reported}</td>
+              <td>{item.enemy_unit}</td>
+              <td>
+                {new Intl.DateTimeFormat("fil-PH", dteOption).format(
+                  new Date(item.date_of_activity)
+                )}
+              </td>
+              <td>{item.type_of_activity}</td>
+              <td>{item.activity}</td>
+              <td>
+                {[item.brgy, item.municipality, item.province].join(", ")}
+              </td>
+              <td>{item.details_of_activity}</td>
+              <td>
+                <UncontrolledDropdown className="mt-4">
+                  <DropdownToggle caret color="primary">
+                    Actions
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem onClick={() => onEdit(item.id)}>
+                      Edit
+                    </DropdownItem>
+                    <DropdownItem disabled onClick={() => onDelete(item.id)}>
+                      Delete
+                    </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </>
   );
 }
 

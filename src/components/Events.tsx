@@ -1,7 +1,19 @@
 import { useState, useEffect } from "react";
-import { Button, Table, Spinner, Col, UncontrolledAlert } from "reactstrap";
+import {
+  Button,
+  Spinner,
+  Col,
+  UncontrolledAlert,
+  Input,
+  Card,
+  CardBody,
+  Form,
+  FormGroup,
+  Label,
+} from "reactstrap";
 import ModalEvents from "./UI/ModalEvents";
 import Paginations from "./UI/Paginations";
+import TableEvents from "./TableEvents";
 
 type UpdatedData = {
   unit_reported: string;
@@ -99,27 +111,26 @@ function Events() {
   const [editedItem, setEditedItem] = useState<Data>(initialData);
   const [resMsg, setResMsg] = useState("");
   const [isSent, setIsSent] = useState(false);
-
-  const dteOption: Intl.DateTimeFormatOptions = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: "Asia/Manila",
-  };
+  const [q, setQ] = useState("");
+  const [filterParam, setFilterParam] = useState("All");
+  const [cbState, setCbState] = useState({
+    NEMRC: false,
+    NCMRC: false,
+    SMRC: false,
+  });
 
   /**button functions */
   const onDelete = (id: number) => {
     setData((prevData) => prevData.filter((item) => item.id !== id));
   };
 
-  const onEdit = (argsid: number) => {
+  const onEdit = (id: number) => {
     //data must not be null to avoid runtime error (non-null assertion)
-    const itemToEdit: Data = data.find((item) => item.id === argsid)!;
-    const { id, ...formEditData } = itemToEdit;
+    const itemToEdit: Data = data.find((item) => item.id === id)!;
+
     if (itemToEdit) {
       setEditedItem(itemToEdit);
-      setFormData({ ...formEditData });
+      setFormData(itemToEdit);
       setModal(true);
       setIsEditing(true);
     }
@@ -137,10 +148,11 @@ function Events() {
       const { id } = editedItem;
       const message = await updateData(id, formData);
       setResMsg(message);
-    } else {
-      alert("submit button clicked");
     }
 
+    if (!isEditing) {
+      alert("submit button clicked");
+    }
     setIsEditing(false);
     setModal(false);
   };
@@ -167,6 +179,24 @@ function Events() {
     setIsSent(false);
   };
 
+  const searchParam: (keyof Data)[] = ["brgy", "municipality", "province"];
+
+  function search(items: Data[]) {
+    return items.filter((item) => {
+      if (filterParam === "All" || filterParam === item.enemy_unit) {
+        return searchParam.some((newItem) => {
+          const itemValue = item[newItem];
+          if (itemValue !== null && itemValue !== undefined) {
+            return (
+              itemValue.toString().toLowerCase().indexOf(q.toLowerCase()) > -1
+            );
+          }
+          return false;
+        });
+      }
+    });
+  }
+
   /**pagination logic start */
   const itemPerPage = 5;
 
@@ -178,7 +208,7 @@ function Events() {
   const endIndex = startIndex + itemPerPage;
 
   //get the data for the current page
-  const currentData = data.slice(startIndex, endIndex);
+  const currentData = search(data).slice(startIndex, endIndex);
 
   //calculate the page range
   const pageRange = 10;
@@ -202,6 +232,12 @@ function Events() {
   ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleCbChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setCbState({ ...cbState, [name]: checked });
+    setFilterParam(checked ? name : "All");
   };
 
   const toggle = () => {
@@ -243,7 +279,7 @@ function Events() {
   if (isSuccess) {
     content = (
       <Col className="w-100">
-        {isSent && (
+        {!!isSent && (
           <UncontrolledAlert
             color="info"
             className="position-absolute top-0 start-50 translate-middle-x mt-2"
@@ -258,57 +294,11 @@ function Events() {
           currentPage={currentPage}
           onPageChange={handlePageChange}
         />
-
-        <Table hover size="sm" responsive>
-          <thead>
-            <tr>
-              <th>Source of Information</th>
-              <th>Threat Group</th>
-              <th>Date of Activity</th>
-              <th>Type of Activity</th>
-              <th>Activity</th>
-              <th>Location</th>
-              <th>Details of Activity</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentData.map((item) => (
-              <tr key={item.id}>
-                <td>{item.unit_reported}</td>
-                <td>{item.enemy_unit}</td>
-                <td>
-                  {new Intl.DateTimeFormat("fil-PH", dteOption).format(
-                    new Date(item.date_of_activity)
-                  )}
-                </td>
-                <td>{item.type_of_activity}</td>
-                <td>{item.activity}</td>
-                <td>
-                  {[item.brgy, item.municipality, item.province].join(", ")}
-                </td>
-                <td>{item.details_of_activity}</td>
-                <td>
-                  <Button
-                    color="primary"
-                    className="mt-2"
-                    onClick={() => onEdit(item.id)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    color="danger"
-                    disabled
-                    className="mt-2"
-                    onClick={() => onDelete(item.id)}
-                  >
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <TableEvents
+          currentData={currentData}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
       </Col>
     );
   }
@@ -318,6 +308,55 @@ function Events() {
         <Button color="primary" onClick={toggle}>
           Add Events
         </Button>
+
+        <Input
+          type="search"
+          name="search"
+          id="search"
+          placeholder="Search by brgy, municipality, province"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+        />
+
+        <Card className="mt-3" style={{ width: "20rem" }}>
+          <CardBody>
+            <Form>
+              <FormGroup check inline>
+                <Input
+                  id="nemrc"
+                  type="checkbox"
+                  checked={cbState.NEMRC}
+                  name="NEMRC"
+                  onChange={handleCbChange}
+                />
+                <Label for="nemrc">NEMRC</Label>
+              </FormGroup>
+
+              <FormGroup check inline>
+                <Input
+                  id="ncmrc"
+                  type="checkbox"
+                  checked={cbState.NCMRC}
+                  name="NCMRC"
+                  onChange={handleCbChange}
+                />
+                <Label for="ncmrc">NCMRC</Label>
+              </FormGroup>
+
+              <FormGroup check inline>
+                <Input
+                  id="smrc"
+                  type="checkbox"
+                  checked={cbState.SMRC}
+                  name="SMRC"
+                  onChange={handleCbChange}
+                />
+                <Label>SMRC</Label>
+              </FormGroup>
+            </Form>
+          </CardBody>
+        </Card>
+
         <ModalEvents
           modalOpen={modal}
           toggle={toggle}
