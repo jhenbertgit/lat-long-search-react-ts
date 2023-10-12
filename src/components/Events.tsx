@@ -236,7 +236,7 @@ function Events() {
 
   //func to handle checkbox onChange
   const handleCbChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked, value } = e.target;
+    const { name, checked } = e.target;
     const updatedState: CbState = {
       NEMRC: false,
       NCMRC: false,
