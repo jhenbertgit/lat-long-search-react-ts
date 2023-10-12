@@ -245,7 +245,6 @@ function Events() {
     };
     setCbState(updatedState);
     setFilterParam(checked ? name : "All");
-    setFilterTactivity(value);
   };
 
   //modal toggle
