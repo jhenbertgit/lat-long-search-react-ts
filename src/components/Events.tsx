@@ -1,19 +1,9 @@
 import { useState, useEffect } from "react";
-import {
-  Button,
-  Spinner,
-  Col,
-  UncontrolledAlert,
-  Input,
-  Card,
-  CardBody,
-  Form,
-  FormGroup,
-  Label,
-} from "reactstrap";
+import { Button, Spinner, Col, UncontrolledAlert, Input } from "reactstrap";
 import ModalEvents from "./UI/ModalEvents";
 import Paginations from "./UI/Paginations";
 import TableEvents from "./TableEvents";
+import Filters from "./UI/Filters";
 
 type UpdatedData = {
   unit_reported: string;
@@ -44,6 +34,12 @@ type UpdatedData = {
 export type Data = {
   id: number;
 } & UpdatedData;
+
+export type CbState = {
+  NEMRC: boolean;
+  NCMRC: boolean;
+  SMRC: boolean;
+};
 
 const initialData: Data = {
   id: 0,
@@ -113,7 +109,7 @@ function Events() {
   const [isSent, setIsSent] = useState(false);
   const [q, setQ] = useState("");
   const [filterParam, setFilterParam] = useState("All");
-  const [cbState, setCbState] = useState({
+  const [cbState, setCbState] = useState<CbState>({
     NEMRC: false,
     NCMRC: false,
     SMRC: false,
@@ -183,7 +179,10 @@ function Events() {
 
   function search(items: Data[]) {
     return items.filter((item) => {
-      if (filterParam === "All" || filterParam === item.enemy_unit) {
+      if (
+        filterParam.includes("All") ||
+        filterParam.includes(item.enemy_unit)
+      ) {
         return searchParam.some((newItem) => {
           const itemValue = item[newItem];
           if (itemValue !== null && itemValue !== undefined) {
@@ -220,11 +219,12 @@ function Events() {
     )
   );
   const endPage = Math.min(startPage + pageRange - 1, totalPages);
-  /**pagination logic start */
+  /**pagination logic end */
 
-  //function to handle the change page
+  //function to handle pagination on change
   const handlePageChange = (pagenumber: number) => setCurrentPage(pagenumber);
 
+  //function to handle form on change
   const handleFormChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -234,12 +234,21 @@ function Events() {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  //func to handle checkbox onChange
   const handleCbChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setCbState({ ...cbState, [name]: checked });
+    const { name, checked, value } = e.target;
+    const updatedState: CbState = {
+      NEMRC: false,
+      NCMRC: false,
+      SMRC: false,
+      [name]: checked,
+    };
+    setCbState(updatedState);
     setFilterParam(checked ? name : "All");
+    setFilterTactivity(value);
   };
 
+  //modal toggle
   const toggle = () => {
     setModal(!modal);
     setIsEditing(false);
@@ -305,7 +314,7 @@ function Events() {
   return (
     <>
       <Col className="mt-3">
-        <Button color="primary" onClick={toggle}>
+        <Button className="mb-3" color="primary" onClick={toggle}>
           Add Events
         </Button>
 
@@ -318,44 +327,7 @@ function Events() {
           onChange={(e) => setQ(e.target.value)}
         />
 
-        <Card className="mt-3" style={{ width: "20rem" }}>
-          <CardBody>
-            <Form>
-              <FormGroup check inline>
-                <Input
-                  id="nemrc"
-                  type="checkbox"
-                  checked={cbState.NEMRC}
-                  name="NEMRC"
-                  onChange={handleCbChange}
-                />
-                <Label for="nemrc">NEMRC</Label>
-              </FormGroup>
-
-              <FormGroup check inline>
-                <Input
-                  id="ncmrc"
-                  type="checkbox"
-                  checked={cbState.NCMRC}
-                  name="NCMRC"
-                  onChange={handleCbChange}
-                />
-                <Label for="ncmrc">NCMRC</Label>
-              </FormGroup>
-
-              <FormGroup check inline>
-                <Input
-                  id="smrc"
-                  type="checkbox"
-                  checked={cbState.SMRC}
-                  name="SMRC"
-                  onChange={handleCbChange}
-                />
-                <Label>SMRC</Label>
-              </FormGroup>
-            </Form>
-          </CardBody>
-        </Card>
+        <Filters onChange={handleCbChange} checkboxState={cbState} />
 
         <ModalEvents
           modalOpen={modal}

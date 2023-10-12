@@ -57,9 +57,9 @@ function App() {
           {/**using type assertion to ensure that the e.target.value is the value
           for status property of type Action*/}
           <Input
+            id="select"
             type="select"
             name="select"
-            id="select"
             onChange={(e) =>
               setAction({ status: e.target.value as Action[keyof Action] })
             }

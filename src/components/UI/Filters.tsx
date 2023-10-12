@@ -1,68 +1,76 @@
-import { useEffect, useState } from "react";
-import {
-  Card,
-  CardBody,
-  Form,
-  FormGroup,
-  Input,
-  Label,
-  Collapse,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
+import { Card, CardBody, Form, FormGroup, Input, Label, Col } from "reactstrap";
+import { CbState } from "../Events";
 
 type FiltersProp = {
-  filterOnChange(args: string): void;
+  onChange(e: React.ChangeEvent<HTMLInputElement>): void;
+  checkboxState: CbState;
 };
 
-function Filters({ filterOnChange }: FiltersProp) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggle = () => setIsOpen(!isOpen);
-
-  useEffect(() => {}, []);
+function Filters({ onChange, checkboxState }: FiltersProp) {
   return (
-    <>
-      <UncontrolledDropdown className="mt-3">
-        <DropdownToggle caret color="primary">
-          Filter by
-        </DropdownToggle>
-        <DropdownMenu>
-          <DropdownItem onClick={toggle}>Threat Group</DropdownItem>
-          <DropdownItem>Region</DropdownItem>
-          <DropdownItem>Type of Activity</DropdownItem>
-        </DropdownMenu>
-      </UncontrolledDropdown>
-      <Collapse isOpen={isOpen}>
-        <Card className="mt-3" style={{ width: "20rem" }}>
-          <CardBody>
-            <Form>
+    <Col className="d-flex gap-3 mt-3">
+      <Card className="mt-3" style={{ width: "20rem" }}>
+        <CardBody>
+          <Form>
+            <FormGroup tag="fieldset">
+              <legend>Filter by Threat Group</legend>
               <FormGroup check inline>
                 <Input
                   id="nemrc"
                   type="checkbox"
-                  value="NEMRC"
-                  onChange={(e) => filterOnChange(e.target.value)}
+                  checked={checkboxState.NEMRC}
+                  name="NEMRC"
+                  onChange={onChange}
                 />
-                <Label for="nemrc">NEMRC</Label>
+                <Label for="nemrc" check>
+                  NEMRC
+                </Label>
               </FormGroup>
 
               <FormGroup check inline>
-                <Input type="checkbox" />
-                <Label>NCMRC</Label>
+                <Input
+                  id="ncmrc"
+                  type="checkbox"
+                  checked={checkboxState.NCMRC}
+                  name="NCMRC"
+                  onChange={onChange}
+                />
+                <Label for="ncmrc" check>
+                  NCMRC
+                </Label>
               </FormGroup>
 
               <FormGroup check inline>
-                <Input type="checkbox" />
-                <Label>SMRC</Label>
+                <Input
+                  id="smrc"
+                  type="checkbox"
+                  checked={checkboxState.SMRC}
+                  name="SMRC"
+                  onChange={onChange}
+                />
+                <Label for="smrc" check>
+                  SMRC
+                </Label>
               </FormGroup>
-            </Form>
-          </CardBody>
-        </Card>
-      </Collapse>
-    </>
+            </FormGroup>
+          </Form>
+        </CardBody>
+      </Card>
+      {/* <Card style={{ width: "20rem" }}>
+        <CardBody>
+          <FormGroup tag="fieldset">
+            <legend>Filter by Type of Activity</legend>
+            <Label for="select" />
+            <Input id="select" type="select" name="select" onChange={onChange}>
+              <option value="All">Select...</option>
+              <option value="NON-VIOLENT">Non-Violent</option>
+              <option value="VIOLENT">Violent</option>
+              <option value="GTO">GTO</option>
+            </Input>
+          </FormGroup>
+        </CardBody>
+      </Card> */}
+    </Col>
   );
 }
 
