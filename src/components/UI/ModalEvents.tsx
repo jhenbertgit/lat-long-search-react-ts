@@ -1,43 +1,18 @@
 import { Modal, ModalBody, ModalHeader } from "reactstrap";
-import FormEvents from "../FormEvents";
+import FormEvents, { FormValue } from "../FormEvents";
 
-type ModalProps = {
+interface Props {
   toggle(): void;
-
-  formValue: {
-    unit_reported: string;
-    source_of_report: string;
-    date_of_report: string;
-    date_of_activity: string;
-    evaluation: string;
-    type_of_activity: string;
-    activity: string;
-    enemy_unit: string;
-    strength: string;
-    leader: string;
-    position: string;
-    sitio: string;
-    brgy: string;
-    municipality: string;
-    province: string;
-    details_of_activity: string;
-    mgrs: string;
-    latitude: string;
-    longitude: string;
-    bdp_status: string;
-    gf_vertical_units: string;
-    type: string;
-    rpsb_deployment_status: string;
-  };
+  modalOpen: boolean;
+  isEditing: boolean;
   formOnChange(
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ): void;
   formOnSubmit(e: React.FormEvent<HTMLFormElement>): void;
-  modalOpen: boolean;
-  isEditing: boolean;
-};
+  formValue: FormValue;
+}
 
 function ModalEvents({
   toggle,
@@ -46,7 +21,7 @@ function ModalEvents({
   formOnChange,
   formOnSubmit,
   formValue,
-}: ModalProps) {
+}: Props) {
   return (
     <Modal isOpen={modalOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>

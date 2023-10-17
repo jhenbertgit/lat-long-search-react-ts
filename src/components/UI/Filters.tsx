@@ -1,12 +1,12 @@
 import { Card, CardBody, Form, FormGroup, Input, Label, Col } from "reactstrap";
 import { CbState } from "../Events";
 
-type FiltersProp = {
-  onChange(e: React.ChangeEvent<HTMLInputElement>): void;
+interface Props {
   checkboxState: CbState;
-};
+  onChange(e: React.ChangeEvent<HTMLInputElement>): void;
+}
 
-function Filters({ onChange, checkboxState }: FiltersProp) {
+function Filters({ onChange, checkboxState }: Props) {
   return (
     <Col className="d-flex gap-3 mt-3">
       <Card className="mt-3" style={{ width: "20rem" }}>
@@ -56,20 +56,6 @@ function Filters({ onChange, checkboxState }: FiltersProp) {
           </Form>
         </CardBody>
       </Card>
-      {/* <Card style={{ width: "20rem" }}>
-        <CardBody>
-          <FormGroup tag="fieldset">
-            <legend>Filter by Type of Activity</legend>
-            <Label for="select" />
-            <Input id="select" type="select" name="select" onChange={onChange}>
-              <option value="All">Select...</option>
-              <option value="NON-VIOLENT">Non-Violent</option>
-              <option value="VIOLENT">Violent</option>
-              <option value="GTO">GTO</option>
-            </Input>
-          </FormGroup>
-        </CardBody>
-      </Card> */}
     </Col>
   );
 }

@@ -1,12 +1,12 @@
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 
-type PaginationProps = {
+interface Props {
   startPage: number;
   endPage: number;
   totalPages: number;
   currentPage: number;
   onPageChange(args: number): void;
-};
+}
 
 function Paginations({
   startPage,
@@ -14,7 +14,7 @@ function Paginations({
   totalPages,
   currentPage,
   onPageChange,
-}: PaginationProps) {
+}: Props) {
   return (
     <Pagination>
       <PaginationItem disabled={currentPage === 1}>

@@ -9,13 +9,13 @@ import {
   UncontrolledAlert,
 } from "reactstrap";
 
-interface Brgy {
+type Brgy = {
   id: number;
   barangay: string;
   city_municipality: string;
   province: string;
   region: string;
-}
+};
 
 const url = import.meta.env.VITE_URL;
 

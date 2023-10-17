@@ -7,13 +7,13 @@ import {
 } from "reactstrap";
 import { Data } from "./Events";
 
-type TableEventsProps = {
+interface Props {
   currentData: Data[];
   onEdit(args: number): void;
   onDelete(args: number): void;
-};
+}
 
-function TableEvents({ currentData, onEdit, onDelete }: TableEventsProps) {
+function TableEvents({ currentData, onEdit, onDelete }: Props) {
   const dteOption: Intl.DateTimeFormatOptions = {
     weekday: "long",
     year: "numeric",

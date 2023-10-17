@@ -1,13 +1,12 @@
 import { Table } from "reactstrap";
 
-type Props = {
+interface Props {
   latitude: string;
   longitude: string;
   address: string;
-};
+}
 
-function ShowResults(props: Props) {
-  const { latitude, longitude, address } = props;
+function ShowResults({ latitude, longitude, address }: Props) {
   return (
     <Table borderless hover>
       <tbody>

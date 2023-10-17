@@ -1,5 +1,4 @@
 import { Route, Routes } from "react-router-dom";
-
 import LatLongSearch from "./components/LatLongSearch";
 import BdpBrgys from "./components/BdpBrgys";
 import RpsbDeployment from "./components/RpsbDeployment";
@@ -43,7 +42,7 @@ function App() {
         }
       />
       <Route
-        path="*"
+        path="/*"
         element={
           <Navigation>
             <ErrorPage />

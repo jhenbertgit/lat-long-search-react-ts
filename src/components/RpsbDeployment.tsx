@@ -8,13 +8,13 @@ import {
   UncontrolledAlert,
 } from "reactstrap";
 
-interface RpsbData {
+type RpsbData = {
   id: number;
   brgy: string;
   municipality: string;
   province: string;
   region: string;
-}
+};
 
 const url = import.meta.env.VITE_URL;
 

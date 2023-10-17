@@ -1,41 +1,42 @@
-import React from "react";
 import { Form, FormGroup, Input, Label, Button } from "reactstrap";
 import { parseISO, isValid, format } from "date-fns";
 
-type FormEventsProps = {
+interface Props {
   onChange(
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ): void;
   onSubmit(e: React.FormEvent<HTMLFormElement>): void;
-  formValue: {
-    unit_reported: string;
-    source_of_report: string;
-    date_of_report: string;
-    date_of_activity: string;
-    evaluation: string;
-    type_of_activity: string;
-    activity: string;
-    enemy_unit: string;
-    strength: string;
-    leader: string;
-    position: string;
-    sitio: string;
-    brgy: string;
-    municipality: string;
-    province: string;
-    details_of_activity: string;
-    mgrs: string;
-    latitude: string;
-    longitude: string;
-    bdp_status: string;
-    gf_vertical_units: string;
-    type: string;
-    rpsb_deployment_status: string;
-  };
+  formValue: FormValue;
   isEditing: boolean;
   toggle(): void;
+}
+
+export type FormValue = {
+  unit_reported: string;
+  source_of_report: string;
+  date_of_report: string;
+  date_of_activity: string;
+  evaluation: string;
+  type_of_activity: string;
+  activity: string;
+  enemy_unit: string;
+  strength: string;
+  leader: string;
+  position: string;
+  sitio: string;
+  brgy: string;
+  municipality: string;
+  province: string;
+  details_of_activity: string;
+  mgrs: string;
+  latitude: string;
+  longitude: string;
+  bdp_status: string;
+  gf_vertical_units: string;
+  type: string;
+  rpsb_deployment_status: string;
 };
 
 function FormEvents({
@@ -44,7 +45,7 @@ function FormEvents({
   formValue,
   isEditing,
   toggle,
-}: FormEventsProps) {
+}: Props) {
   const formatDateActivity = (dateStr: string) => {
     const parseDate = parseISO(dateStr);
 
