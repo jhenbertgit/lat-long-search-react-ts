@@ -41,6 +41,10 @@ export type CbState = {
   SMRC: boolean;
 };
 
+type Action = {
+  status: "loading" | "success" | "editing";
+};
+
 const initialData: Data = {
   id: 0,
   unit_reported: " ",
@@ -98,9 +102,6 @@ const url = import.meta.env.VITE_URL;
 function Events() {
   const [data, setData] = useState<Data[]>([initialData]);
   const [error, setError] = useState<Error | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [modal, setModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [formData, setFormData] = useState<UpdatedData>(initialFormData);
@@ -114,6 +115,7 @@ function Events() {
     NCMRC: false,
     SMRC: false,
   });
+  const [status, setStatus] = useState<Action>({ status: "loading" });
 
   /**button functions */
   const onDelete = (id: number) => {
@@ -128,7 +130,7 @@ function Events() {
       setEditedItem(itemToEdit);
       setFormData(itemToEdit);
       setModal(true);
-      setIsEditing(true);
+      setStatus({ status: "editing" });
     }
   };
 
@@ -140,17 +142,16 @@ function Events() {
       )
     );
     //sending updated data to database
-    if (isEditing) {
+    if (status.status === "editing") {
       const { id } = editedItem;
       const message = await updateData(id, formData);
       setResMsg(message);
-    }
-
-    if (!isEditing) {
+      setStatus({ status: "success" });
+    } else {
       alert("submit button clicked");
     }
-    setIsEditing(false);
     setModal(false);
+    setTimeout(() => setIsSent(false), 4000);
   };
 
   //function to update the data in database
@@ -172,7 +173,6 @@ function Events() {
     } catch (error) {
       setError(error as Error);
     }
-    setIsSent(false);
   };
 
   const searchParam: (keyof Data)[] = ["brgy", "municipality", "province"];
@@ -250,20 +250,18 @@ function Events() {
   //modal toggle
   const toggle = () => {
     setModal(!modal);
-    setIsEditing(false);
+    setStatus({ status: "success" });
   };
 
   let content;
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
       try {
         const eventsData = await fetch(`${url}:5000/api/v1/events`);
         const response = await eventsData.json();
         setData(response);
-        setIsLoading(false);
-        setIsSuccess(true);
+        setStatus({ status: "success" });
       } catch (error) {
         setError(error as Error);
       }
@@ -275,7 +273,7 @@ function Events() {
     content = <>Error: {error.message}</>;
   }
 
-  if (isLoading) {
+  if (status.status === "loading") {
     content = (
       <Spinner
         color="primary"
@@ -284,17 +282,9 @@ function Events() {
     );
   }
 
-  if (isSuccess) {
+  if (status.status === "success" || status.status === "editing") {
     content = (
       <Col className="w-100">
-        {!!isSent && (
-          <UncontrolledAlert
-            color="info"
-            className="position-absolute top-0 start-50 translate-middle-x mt-2"
-          >
-            {resMsg}
-          </UncontrolledAlert>
-        )}
         <Paginations
           startPage={startPage}
           endPage={endPage}
@@ -313,6 +303,14 @@ function Events() {
   return (
     <>
       <Col className="mt-3">
+        {!!isSent && (
+          <UncontrolledAlert
+            color="info"
+            className="position-absolute top-0 start-50 translate-middle-x mt-2"
+          >
+            {resMsg}
+          </UncontrolledAlert>
+        )}
         <Button className="mb-3" color="primary" onClick={toggle}>
           Add Events
         </Button>
@@ -331,9 +329,11 @@ function Events() {
         <ModalEvents
           modalOpen={modal}
           toggle={toggle}
-          isEditing={isEditing}
-          formOnChange={isEditing ? handleFormChange : () => {}}
-          formValue={isEditing ? formData : initialFormData}
+          isEditing={status.status === "editing"}
+          formOnChange={
+            status.status === "editing" ? handleFormChange : () => {}
+          }
+          formValue={status.status === "editing" ? formData : initialFormData}
           formOnSubmit={handleFormSubmit}
         />
       </Col>
