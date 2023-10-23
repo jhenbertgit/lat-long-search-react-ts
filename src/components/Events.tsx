@@ -151,7 +151,7 @@ function Events() {
       alert("submit button clicked");
     }
     setModal(false);
-    setTimeout(() => setIsSent(false), 4000);
+    setTimeout(() => setIsSent(!isSent), 4000);
   };
 
   //function to update the data in database
@@ -258,10 +258,12 @@ function Events() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const eventsData = await fetch(`${url}:5000/api/v1/events`);
-        const response = await eventsData.json();
-        setData(response);
-        setStatus({ status: "success" });
+        const response = await fetch(`${url}:5000/api/v1/events`);
+        const eventsData: Data[] = await response.json();
+        if (response.ok) {
+          setData(eventsData);
+          setStatus({ status: "success" });
+        }
       } catch (error) {
         setError(error as Error);
       }
@@ -270,7 +272,16 @@ function Events() {
   }, []);
 
   if (error) {
-    content = <>Error: {error.message}</>;
+    content = (
+      <>
+        <UncontrolledAlert
+          color="warning"
+          className="position-absolute top-0 start-50 translate-middle-x mt-2"
+        >
+          {error.name}: {error.message}
+        </UncontrolledAlert>
+      </>
+    );
   }
 
   if (status.status === "loading") {

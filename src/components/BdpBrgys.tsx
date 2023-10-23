@@ -30,8 +30,8 @@ function BdpBrgys() {
 
   const fetchBrgysData = useCallback(async () => {
     try {
-      const resBdp = await fetch(`${url}:5000/api/v1/bdpbrgys`);
-      const dataBdp: Brgy[] = await resBdp.json();
+      const response = await fetch(`${url}:5000/api/v1/bdpbrgys`);
+      const dataBdp: Brgy[] = await response.json();
       setIsLoaded(true);
       setItems(dataBdp);
     } catch (error) {

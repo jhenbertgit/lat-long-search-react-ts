@@ -28,10 +28,10 @@ function RpsbDeployment() {
 
   const fetchData = useCallback(async () => {
     try {
-      const data = await fetch(`${url}:5000/api/v1/rpsbdeployment`);
-      const response: RpsbData[] = await data.json();
+      const response = await fetch(`${url}:5000/api/v1/rpsbdeployment`);
+      const rpsbData: RpsbData[] = await response.json();
       setIsLoaded(true);
-      setRpsbDeployment(response);
+      setRpsbDeployment(rpsbData);
     } catch (error) {
       setIsLoaded(true);
       setError(error as Error);
