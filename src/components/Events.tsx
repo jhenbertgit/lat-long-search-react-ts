@@ -42,7 +42,7 @@ export type CbState = {
 };
 
 type Action = {
-  status: "loading" | "success" | "editing";
+  status: "loading" | "success" | "editing" | "error";
 };
 
 const initialData: Data = {
@@ -266,6 +266,7 @@ function Events() {
         }
       } catch (error) {
         setError(error as Error);
+        setStatus({ status: "error" });
       }
     };
     fetchData();

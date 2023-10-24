@@ -1,26 +1,23 @@
+import { useContext } from "react";
 import { Table } from "reactstrap";
+import { LatLongStateCtx } from "../context/LatLongCtx";
 
-interface Props {
-  latitude: string;
-  longitude: string;
-  address: string;
-}
-
-function ShowResults({ latitude, longitude, address }: Props) {
+function ShowResults() {
+  const state = useContext(LatLongStateCtx);
   return (
     <Table borderless hover>
       <tbody>
         <tr>
           <th scope="row">Latitude:</th>
-          <td>{latitude}</td>
+          <td>{state.dataset.lat}</td>
         </tr>
         <tr>
           <th scope="row">Longitude:</th>
-          <td>{longitude}</td>
+          <td>{state.dataset.lng}</td>
         </tr>
         <tr>
           <th scope="row">Address:</th>
-          <td>{address}</td>
+          <td>{state.dataset.address}</td>
         </tr>
       </tbody>
     </Table>
