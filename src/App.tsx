@@ -3,50 +3,67 @@ import LatLongSearch from "./components/LatLongSearch";
 import BdpBrgys from "./components/BdpBrgys";
 import RpsbDeployment from "./components/RpsbDeployment";
 import Events from "./components/Events";
-import Navigation from "./components/UI/Navigation";
 import ErrorPage from "./components/ErrorPage";
+import Header from "./components/UI/Header";
+import { useEffect } from "react";
 
 function App() {
+  useEffect(() => {
+    //will be called whenever the URL changes
+    const updateTitle = () => {
+      const path = window.location.pathname;
+      const fullPathName = path.split("/");
+      const pathName = fullPathName[fullPathName.length - 1];
+      const pageTitle = `ID APC-EM MIS | ${pathName}`;
+      document.title = pageTitle;
+    };
+    //update the HTML title when the component mounts and the URL changes
+    updateTitle();
+    window.addEventListener("popstate", updateTitle);
+
+    //clean up the event listener when the component unmounts
+    return () => window.removeEventListener("popstate", updateTitle);
+  }, []);
   return (
     <Routes>
       <Route
         path="/"
         element={
-          <Navigation>
+          <Header>
             <Events />
-          </Navigation>
+          </Header>
         }
       />
       <Route
         path="/bdp"
         element={
-          <Navigation>
+          <Header>
             <BdpBrgys />
-          </Navigation>
+          </Header>
         }
       />
       <Route
         path="rpsb"
         element={
-          <Navigation>
+          <Header>
             <RpsbDeployment />
-          </Navigation>
+          </Header>
         }
       />
       <Route
         path="latlong"
         element={
-          <Navigation>
+          <Header>
             <LatLongSearch />
-          </Navigation>
+          </Header>
         }
       />
       <Route
         path="/*"
         element={
-          <Navigation>
+          <Header>
             <ErrorPage />
-          </Navigation>
+          </Header>
         }
       />
     </Routes>
