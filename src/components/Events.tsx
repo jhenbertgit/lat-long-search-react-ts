@@ -4,6 +4,7 @@ import ModalEvents from "./UI/ModalEvents";
 import Paginations from "./UI/Paginations";
 import TableEvents from "./TableEvents";
 import Filters from "./UI/Filters";
+import FormEvents from "./FormEvents";
 
 type UpdatedData = {
   unit_reported: string;
@@ -151,7 +152,8 @@ function Events() {
       alert("submit button clicked");
     }
     setModal(false);
-    setTimeout(() => setIsSent(!isSent), 4000);
+    setFormData(initialFormData);
+    setTimeout(() => setIsSent(false), 3000);
   };
 
   //function to update the data in database
@@ -197,7 +199,7 @@ function Events() {
   }
 
   /**pagination logic start */
-  const itemPerPage = 5;
+  const itemPerPage = 10;
 
   //calculate total number of pages
   const totalPages = Math.ceil(data.length / itemPerPage);
@@ -250,6 +252,7 @@ function Events() {
   //modal toggle
   const toggle = () => {
     setModal(!modal);
+    setFormData(initialFormData);
     setStatus({ status: "success" });
   };
 
@@ -341,13 +344,16 @@ function Events() {
         <ModalEvents
           modalOpen={modal}
           toggle={toggle}
-          isEditing={status.status === "editing"}
-          formOnChange={
-            status.status === "editing" ? handleFormChange : () => {}
-          }
-          formValue={status.status === "editing" ? formData : initialFormData}
-          formOnSubmit={handleFormSubmit}
-        />
+          title={status.status === "editing" ? "Edit" : "Add"}
+        >
+          <FormEvents
+            onChange={handleFormChange}
+            onSubmit={handleFormSubmit}
+            formValue={formData}
+            isEditing={status.status === "editing"}
+            toggle={toggle}
+          />
+        </ModalEvents>
       </Col>
       <Col md={12} className="mt-4 d-flex justify-content-center">
         {content}

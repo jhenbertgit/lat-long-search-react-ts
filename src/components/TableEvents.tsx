@@ -1,11 +1,8 @@
-import {
-  Table,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
+import { useState } from "react";
+import { Table, Button } from "reactstrap";
 import { Data } from "./Events";
+import ModalEvents from "./UI/ModalEvents";
+import { AiFillDelete, AiFillEdit, AiFillEye } from "react-icons/ai";
 
 interface Props {
   currentData: Data[];
@@ -14,6 +11,7 @@ interface Props {
 }
 
 function TableEvents({ currentData, onEdit, onDelete }: Props) {
+  const [isOpen, setIsOpen] = useState(false);
   const dteOption: Intl.DateTimeFormatOptions = {
     weekday: "long",
     year: "numeric",
@@ -21,6 +19,8 @@ function TableEvents({ currentData, onEdit, onDelete }: Props) {
     day: "numeric",
     timeZone: "Asia/Manila",
   };
+
+  const toggle = () => setIsOpen(!isOpen);
 
   return (
     <>
@@ -33,8 +33,9 @@ function TableEvents({ currentData, onEdit, onDelete }: Props) {
             <th>Type of Activity</th>
             <th>Activity</th>
             <th>Location</th>
-            <th>Details of Activity</th>
-            <th>Action</th>
+            <th>BDP Benificaiary Status</th>
+            <th>R-PSB Deployment Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -52,26 +53,53 @@ function TableEvents({ currentData, onEdit, onDelete }: Props) {
               <td>
                 {[item.brgy, item.municipality, item.province].join(", ")}
               </td>
-              <td>{item.details_of_activity}</td>
+              <td>{item.bdp_status}</td>
               <td>
-                <UncontrolledDropdown className="mt-4">
-                  <DropdownToggle caret color="primary">
-                    Actions
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    <DropdownItem onClick={() => onEdit(item.id)}>
-                      Edit
-                    </DropdownItem>
-                    <DropdownItem disabled onClick={() => onDelete(item.id)}>
-                      Delete
-                    </DropdownItem>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
+                {item.rpsb_deployment_status &&
+                typeof item.rpsb_deployment_status === "string"
+                  ? item.rpsb_deployment_status
+                      .split(" ")
+                      .map(
+                        (word) =>
+                          word.charAt(0).toUpperCase() +
+                          word.slice(1).toLowerCase()
+                      )
+                      .join(" ")
+                  : ""}
+              </td>
+              <td>
+                <div className="d-flex flex-row gap-1">
+                  <Button
+                    size="sm"
+                    color="primary"
+                    onClick={() => onEdit(item.id)}
+                  >
+                    <AiFillEdit />
+                  </Button>
+                  <Button size="sm" color="primary" onClick={toggle}>
+                    <AiFillEye />
+                  </Button>
+                  <Button
+                    size="sm"
+                    color="danger"
+                    onClick={() => onDelete(item.id)}
+                    disabled
+                  >
+                    <AiFillDelete />
+                  </Button>
+                </div>
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
+      <ModalEvents
+        modalOpen={isOpen}
+        toggle={toggle}
+        title="Details of Activity"
+      >
+        {currentData.map((item) => item.details_of_activity)}
+      </ModalEvents>
     </>
   );
 }
