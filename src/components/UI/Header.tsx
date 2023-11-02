@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   Container,
   Row,
@@ -20,7 +21,16 @@ function Header({ children }: Props) {
     <>
       <Navbar color="dark" expand="md" dark>
         <NavbarBrand href="/">
-          <img
+          <motion.img
+            initial={{ rotate: 0 }}
+            animate={{ rotate: 360 }}
+            transition={{
+              duration: 1,
+              repeat: Infinity,
+              type: "spring",
+              damping: 10,
+              stiffness: 100,
+            }}
             alt="logo"
             src="/apcem.png"
             style={{
