@@ -4,7 +4,7 @@ import { Nav, NavItem, NavLink } from "reactstrap";
 function Navigation() {
   const location = useLocation();
   return (
-    <Nav className="me-auto" navbar>
+    <Nav className="me-auto" navbar pills>
       <NavItem>
         <NavLink href="/" active={location.pathname === "/"}>
           Events
