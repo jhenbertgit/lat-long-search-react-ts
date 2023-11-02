@@ -12,15 +12,22 @@ interface Props {
 
 function TableEvents({ currentData, onEdit, onDelete }: Props) {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<Data | null>(null);
+
   const dteOption: Intl.DateTimeFormatOptions = {
-    weekday: "long",
+    weekday: "short",
     year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
     timeZone: "Asia/Manila",
   };
 
   const toggle = () => setIsOpen(!isOpen);
+
+  const openModal = (item: Data) => {
+    setSelectedItem(item);
+    setIsOpen(true);
+  };
 
   return (
     <>
@@ -44,7 +51,7 @@ function TableEvents({ currentData, onEdit, onDelete }: Props) {
               <td>{item.unit_reported}</td>
               <td>{item.enemy_unit}</td>
               <td>
-                {new Intl.DateTimeFormat("fil-PH", dteOption).format(
+                {new Intl.DateTimeFormat("en-PH", dteOption).format(
                   new Date(item.date_of_activity)
                 )}
               </td>
@@ -76,7 +83,11 @@ function TableEvents({ currentData, onEdit, onDelete }: Props) {
                   >
                     <AiFillEdit />
                   </Button>
-                  <Button size="sm" color="primary" onClick={toggle}>
+                  <Button
+                    size="sm"
+                    color="primary"
+                    onClick={() => openModal(item)}
+                  >
                     <AiFillEye />
                   </Button>
                   <Button
@@ -93,13 +104,15 @@ function TableEvents({ currentData, onEdit, onDelete }: Props) {
           ))}
         </tbody>
       </Table>
-      <ModalEvents
-        modalOpen={isOpen}
-        toggle={toggle}
-        title="Details of Activity"
-      >
-        {currentData.map((item) => item.details_of_activity)}
-      </ModalEvents>
+      {selectedItem && (
+        <ModalEvents
+          modalOpen={isOpen}
+          toggle={toggle}
+          title="Details of Activity"
+        >
+          {selectedItem.details_of_activity}
+        </ModalEvents>
+      )}
     </>
   );
 }
