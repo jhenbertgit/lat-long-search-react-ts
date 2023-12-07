@@ -1,20 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Container,
-  Row,
-  Navbar,
-  NavbarBrand,
-  Collapse,
-  NavbarToggler,
-} from "reactstrap";
+import { Navbar, NavbarBrand, Collapse, NavbarToggler } from "reactstrap";
 import Navigation from "./Navigation";
 
-interface Props {
-  children: React.ReactNode;
-}
-
-function Header({ children }: Props) {
+function Header() {
   const [isOPen, setIsOPen] = useState(false);
   const toggle = () => setIsOPen(!isOPen);
   return (
@@ -44,9 +33,6 @@ function Header({ children }: Props) {
           <Navigation />
         </Collapse>
       </Navbar>
-      <Container>
-        <Row> {children}</Row>
-      </Container>
     </>
   );
 }

@@ -25,6 +25,11 @@ function Navigation() {
           Search LatLong
         </NavLink>
       </NavItem>
+      <NavItem>
+        <NavLink href="/quote" active={location.pathname === "/quote"}>
+          Parting Words
+        </NavLink>
+      </NavItem>
     </Nav>
   );
 }

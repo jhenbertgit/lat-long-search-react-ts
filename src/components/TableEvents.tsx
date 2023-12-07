@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Table, Button } from "reactstrap";
-import { Data } from "./Events";
+import { Data } from "../page/Events";
 import ModalEvents from "./UI/ModalEvents";
 import { AiFillDelete, AiFillEdit, AiFillEye } from "react-icons/ai";
 

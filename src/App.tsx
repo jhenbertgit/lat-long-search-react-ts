@@ -1,11 +1,12 @@
-import { Route, Routes } from "react-router-dom";
-import LatLongSearch from "./components/LatLongSearch";
-import BdpBrgys from "./components/BdpBrgys";
-import RpsbDeployment from "./components/RpsbDeployment";
-import Events from "./components/Events";
-import ErrorPage from "./components/ErrorPage";
-import Header from "./components/UI/Header";
 import { useEffect } from "react";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import LatLongSearch from "./page/LatLongSearch";
+import BdpBrgys from "./page/BdpBrgys";
+import RpsbDeployment from "./components/RpsbDeployment";
+import Events from "./page/Events";
+import ErrorPage from "./page/ErrorPage";
+import RootLayout from "./layout/RootLayout";
+import PartingWords from "./page/PartingWords";
 
 function App() {
   useEffect(() => {
@@ -15,7 +16,7 @@ function App() {
       const fullPathName = path.split("/");
       const pathName = fullPathName[fullPathName.length - 1];
       const pageTitle = `ID APC-EM MIS | ${pathName}`;
-      document.title = pageTitle;
+      document.title = pageTitle.toUpperCase();
     };
     //update the HTML title when the component mounts and the URL changes
     updateTitle();
@@ -24,50 +25,23 @@ function App() {
     //clean up the event listener when the component unmounts
     return () => window.removeEventListener("popstate", updateTitle);
   }, []);
-  return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <Header>
-            <Events />
-          </Header>
-        }
-      />
-      <Route
-        path="/bdp"
-        element={
-          <Header>
-            <BdpBrgys />
-          </Header>
-        }
-      />
-      <Route
-        path="rpsb"
-        element={
-          <Header>
-            <RpsbDeployment />
-          </Header>
-        }
-      />
-      <Route
-        path="latlong"
-        element={
-          <Header>
-            <LatLongSearch />
-          </Header>
-        }
-      />
-      <Route
-        path="/*"
-        element={
-          <Header>
-            <ErrorPage />
-          </Header>
-        }
-      />
-    </Routes>
-  );
+
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <RootLayout />,
+      errorElement: <ErrorPage />,
+      children: [
+        { index: true, element: <Events /> },
+        { path: "bdp", element: <BdpBrgys /> },
+        { path: "rpsb", element: <RpsbDeployment /> },
+        { path: "latlong", element: <LatLongSearch /> },
+        { path: "quote", element: <PartingWords /> },
+      ],
+    },
+  ]);
+
+  return <RouterProvider router={router} />;
 }
 
 export default App;

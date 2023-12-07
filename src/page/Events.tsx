@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Button, Spinner, Col, UncontrolledAlert, Input } from "reactstrap";
-import ModalEvents from "./UI/ModalEvents";
-import Paginations from "./UI/Paginations";
-import TableEvents from "./TableEvents";
-import Filters from "./UI/Filters";
-import FormEvents from "./FormEvents";
+import ModalEvents from "../components/UI/ModalEvents";
+import Paginations from "../components/UI/Paginations";
+import TableEvents from "../components/TableEvents";
+import Filters from "../components/UI/Filters";
+import FormEvents from "../components/FormEvents";
 
 type UpdatedData = {
   unit_reported: string;

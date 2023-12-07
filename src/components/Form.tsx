@@ -12,8 +12,8 @@ function Form() {
   const options = {
     method: "GET",
     headers: {
-      "X-RapidAPI-Key": import.meta.env.VITE_REACT_APP_RAPIDAPI_KEY,
-      "X-RapidAPI-Host": import.meta.env.VITE_REACT_APP_RAPIDAPI_HOST,
+      "X-RapidAPI-Key": import.meta.env.VITE_RAPIDAPI_KEY,
+      "X-RapidAPI-Host": "trueway-geocoding.p.rapidapi.com",
     },
   };
 

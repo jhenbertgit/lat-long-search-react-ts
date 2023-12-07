@@ -1,7 +1,7 @@
 import { useReducer } from "react";
 import { Col, Spinner } from "reactstrap";
-import ShowResults from "./ShowResults";
-import Form from "./Form";
+import ShowResults from "../components/ShowResults";
+import Form from "../components/Form";
 import {
   LatLongDispatchCtx,
   LatLongStateCtx,

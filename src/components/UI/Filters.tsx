@@ -1,5 +1,5 @@
 import { Card, CardBody, Form, FormGroup, Input, Label, Col } from "reactstrap";
-import { CbState } from "../Events";
+import { CbState } from "../../page/Events";
 
 interface Props {
   checkboxState: CbState;
